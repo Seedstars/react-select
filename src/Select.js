@@ -51,7 +51,8 @@ var Select = React.createClass({
 		singleValueComponent: React.PropTypes.func,// single value component when multiple is set to false
 		value: React.PropTypes.any,                // initial field value
 		valueComponent: React.PropTypes.func,      // value component to render in multiple mode
-		valueRenderer: React.PropTypes.func        // valueRenderer: function(option) {}
+		valueRenderer: React.PropTypes.func,       // valueRenderer: function(option) {}
+		floatingPlaceholder: React.PropTypes.string   // Title in Select Box
 	},
 
 	getDefaultProps: function() {
@@ -79,7 +80,7 @@ var Select = React.createClass({
 			onOptionLabelClick: undefined,
 			optionComponent: Option,
 			options: undefined,
-			placeholder: 'Select...',
+			placeholder: '',
 			searchable: true,
 			searchPromptText: 'Type to search',
 			singleValueComponent: SingleValue,
@@ -787,6 +788,10 @@ var Select = React.createClass({
 			onFocus: this.handleInputFocus,
 			onBlur: this.handleInputBlur
 		};
+		var floatingPlaceholder =  (
+			<div className='Select-placeholder floating'>{this.props.floatingPlaceholder}</div>
+		);
+
 		for (var key in this.props.inputProps) {
 			if (this.props.inputProps.hasOwnProperty(key) && key !== 'className') {
 				inputProps[key] = this.props.inputProps[key];
@@ -807,6 +812,7 @@ var Select = React.createClass({
 			<div ref="wrapper" className={selectClass}>
 				<input type="hidden" ref="value" name={this.props.name} value={this.state.value} disabled={this.props.disabled} />
 				<div className="Select-control" ref="control" onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseDown} onTouchEnd={this.handleMouseDown}>
+					{floatingPlaceholder}
 					{value}
 					{input}
 					<span className="Select-arrow-zone" onMouseDown={this.handleMouseDownOnArrow} />
