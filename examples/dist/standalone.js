@@ -99,7 +99,8 @@ var Select = React.createClass({
 		singleValueComponent: React.PropTypes.func, // single value component when multiple is set to false
 		value: React.PropTypes.any, // initial field value
 		valueComponent: React.PropTypes.func, // value component to render in multiple mode
-		valueRenderer: React.PropTypes.func // valueRenderer: function(option) {}
+		valueRenderer: React.PropTypes.func, // valueRenderer: function(option) {}
+		floatingPlaceholder: React.PropTypes.string // Title in Select Box
 	},
 
 	getDefaultProps: function getDefaultProps() {
@@ -127,7 +128,7 @@ var Select = React.createClass({
 			onOptionLabelClick: undefined,
 			optionComponent: Option,
 			options: undefined,
-			placeholder: 'Select...',
+			placeholder: '',
 			searchable: true,
 			searchPromptText: 'Type to search',
 			singleValueComponent: SingleValue,
@@ -398,6 +399,15 @@ var Select = React.createClass({
 		}
 		event.stopPropagation();
 		event.preventDefault();
+
+		// for the non-searchable select, close the dropdown when button is clicked
+		if (this.state.isOpen && !this.props.searchable) {
+			this.setState({
+				isOpen: false
+			}, this._unbindCloseMenuIfClickedOutside);
+			return;
+		}
+
 		if (this.state.isFocused) {
 			this.setState({
 				isOpen: true
@@ -838,6 +848,12 @@ var Select = React.createClass({
 			onFocus: this.handleInputFocus,
 			onBlur: this.handleInputBlur
 		};
+		var floatingPlaceholder = React.createElement(
+			'div',
+			{ className: 'Select-placeholder floating' },
+			this.props.floatingPlaceholder
+		);
+
 		for (var key in this.props.inputProps) {
 			if (this.props.inputProps.hasOwnProperty(key) && key !== 'className') {
 				inputProps[key] = this.props.inputProps[key];
@@ -869,6 +885,7 @@ var Select = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'Select-control', ref: 'control', onKeyDown: this.handleKeyDown, onMouseDown: this.handleMouseDown, onTouchEnd: this.handleMouseDown },
+				floatingPlaceholder,
 				value,
 				input,
 				React.createElement('span', { className: 'Select-arrow-zone', onMouseDown: this.handleMouseDownOnArrow }),
